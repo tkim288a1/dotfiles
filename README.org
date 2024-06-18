@@ -7,7 +7,7 @@ The only required pieces of software are =git= and =stow=.
 
 #+BEGIN_SRC sh
 # Arch linux
-pacman -S git stow
+sudo pacman -S git stow
 
 # MacOS
 brew install git stow
@@ -16,6 +16,7 @@ brew install git stow
 * Installation
 Check out this repo in your =$HOME= directory using git
 #+BEGIN_SRC sh
+cd ~
 git clone https://github.com/tkim288a1/dotfiles.git
 cd dotfiles
 #+END_SRC
