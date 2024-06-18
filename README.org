@@ -1,0 +1,25 @@
+#+TITLE: My Dotfiles
+
+This directory contains dotfiles for my MacOS and Linux systems.
+
+* Requirements
+The only required pieces of software are =git= and =stow=.
+
+#+BEGIN_SRC sh
+# Arch linux
+pacman -S git stow
+
+# MacOS
+brew install git stow
+#+END_SRC
+
+* Installation
+Check out this repo in your =$HOME= directory using git
+#+BEGIN_SRC sh
+git clone https://github.com/tkim288a1/dotfiles.git
+cd dotfiles
+#+END_SRC
+and then use GNU stow to create symlinks
+#+BEGIN_SRC sh
+stow .
+#+END_SRC
