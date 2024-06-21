@@ -1,0 +1,30 @@
+# basic settings
+#set adjust-open "width"
+set adjust-open "height"
+set font "FiraCodeNerd 18"
+set statusbar-h-padding 20
+set statusbar-v-padding 10
+set page-padding 2
+set window-title-home-tilde 1
+set first-page-column 1
+set selection-clipboard clipboard
+set selection-notification false
+
+# key maps
+map u scroll half-up
+map d scroll half-down
+map D toggle_page_mode
+map r reload
+map R rotate
+map I zoom in
+map U zoom out
+map i recolor
+map p print
+
+# Include theme config file below
+include ../base16/zathura/base16-tk-nord.config
+# include ../base16/zathura/base16-nord.config
+# include ../base16/zathura/base16-dracula.config
+
+set recolor "false"             # start light
+
