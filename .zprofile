@@ -12,3 +12,6 @@ export PATH="$PATH:$(du "$HOME/.local/bin" | cut -f2 | tr '\n' ':' | sed 's/:*$/
 # for proper fortran compilation
 export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
 export LIBRARY_PATH="$LIBRARY_PATH:$SDKROOT/usr/lib"
+
+# docker
+export DOCKER_HOST=unix://${HOME}/.colima/default/docker.sock
