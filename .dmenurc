@@ -1,0 +1,35 @@
+#
+# ~/.dmenurc
+#
+
+## define the font for dmenu to be used
+#DMENU_FN="Noto-11.5"
+#DMENU_FN="HackNerdFont-11"
+DMENU_FN="RobotoMono-10"
+
+## height
+DMENU_HT=25
+
+## background colour for unselected menu-items
+#DMENU_NB="#2B2C2B"
+DMENU_NB="#3B4252"
+
+## textcolour for unselected menu-items
+DMENU_NF="#F9FAF9"
+
+## background colour for selected menu-items
+#DMENU_SB="#16A085"
+DMENU_SB="#5E81AC"
+
+## textcolour for selected menu-items
+DMENU_SF="#F9FAF9"
+
+## Opacity
+DMENU_OP="0.98"
+
+## command for the terminal application to be used:
+TERMINAL_CMD="terminal -e"
+
+## export our variables
+# DMENU_OPTIONS="-fn $DMENU_FN -nb $DMENU_NB -nf $DMENU_NF -sf $DMENU_SF -sb $DMENU_SB -h $DMENU_HT -o $DMENU_OP"
+DMENU_OPTIONS="-fn $DMENU_FN -nb $DMENU_NB -nf $DMENU_NF -sf $DMENU_SF -sb $DMENU_SB -h $DMENU_HT"
