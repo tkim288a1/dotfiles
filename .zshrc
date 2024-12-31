@@ -1,21 +1,22 @@
-# Sensible, short .zshrc
+# Modified from "Sensible, short .zshrc"
 # Gist page: git.io/vSBRk
 # Raw file:  curl -L git.io/sensible-zshrc
 
-# GNU and BSD (macOS) ls flags aren't compatible
-ls --version &>/dev/null
-if [ $? -eq 0 ]; then
-    lsflags="--color --group-directories-first -F"
+# BETTER LS
+# Check if 'gls' (GNU ls) is installed
+if command -v gls &>/dev/null; then
+    myls="gls --color=auto --group-directories-first -F"
 else
-    lsflags="-GF"
+    # Fallback to system 'ls'
     export CLICOLOR=1
+    myls="ls -GF"
 fi
 
-# Aliases
-alias ls="ls ${lsflags}"
-alias ll="ls ${lsflags} -l"
-alias la="ls ${lsflags} -la"
-alias l="ls ${lsflags} -lah"
+# BASIC ALIASES (LS, HISTORY, CD, ETC)
+alias ls="${myls}"
+alias ll="${myls} -l"
+alias la="${myls} -la"
+alias l="${myls} -lah"
 alias h="history"
 alias hg="history -1000 | grep -i"
 alias ,="cd .."
@@ -144,3 +145,19 @@ fi
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 
 eval "$(starship init zsh)"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
