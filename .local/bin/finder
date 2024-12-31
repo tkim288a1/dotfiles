@@ -1,0 +1,45 @@
+#!/bin/bash
+# A fuzzy file-finder and opener based on dmenu
+# Requires: dmenu, xdg-utils
+# Just a modification of these scripts:
+# https://gist.github.com/dragonauta/6161b40ff0236ed96d7ff56639ac538d
+# https://github.com/Chrysostomus/bspwm-scripts/blob/master/bin/finder
+# The folders variable can be changed to fit your needs an easy one would be ~/
+# The -L argument is only needed if you want to follow symlinks if not you can remove it
+# Some modification:
+# add -type f after the $folders variable if you want to search only for files
+# add -type d after the $folders variable if you want to search only for directories
+# add regular expressions to filter eg.: \( ! -regex '.*/\..*' \) to filter .dotfiles
+# add -r after xargs to avoid opening evince when no file is selected
+
+# Update: use the user dmenurc for consistency
+if ! [ -f "$HOME/.dmenurc" ]; then
+    cp /usr/share/dmenu/dmenurc "$HOME/.dmenurc"
+fi
+. "$HOME/.dmenurc"
+LINES=20
+FOLDERS="$HOME/dox \
+$HOME/Projects \
+$HOME/tmp \
+$HOME/clones \
+$HOME/Documents \
+$HOME/Downloads \
+$HOME/gnb \
+$HOME/Dropbox/dox \
+$HOME/Dropbox/teaching \
+$HOME/Dropbox/tmp \
+$HOME/1131 \
+$HOME/1151 \
+$HOME/1152 \
+$HOME/3607 \
+$HOME/3607master \
+$HOME/5602 \
+$HOME/5601"
+dmenu_cmd="dmenu -i -l $LINES $DMENU_OPTIONS "
+
+# 2024-02-20 modification for mac
+find -H -f $FOLDERS \( -name "*.pdf" -o -name "*.djvu" -o -name "*.ps" \) | sed 's|/Users/tae|~|g' | sort -f | $dmenu_cmd -p 'Select document: ' | xargs -r zathura
+
+# 2024-09-03 modification: handle filenames with spaces properly
+# Note -print0 option for find and -0 option for xargs
+# find -H -f $FOLDERS \( -name "*.pdf" -o -name "*.djvu" -o -name "*.ps" \) -print0 | sed 's|/Users/tae|~|g' | sort -f | $dmenu_cmd -p 'Select document: ' | xargs -r -0 zathura

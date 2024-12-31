@@ -1,0 +1,3 @@
+#!/bin/bash
+# https://pragmaticemacs.wordpress.com/2016/01/26/speed-up-pdf-export-from-org-mode-with-latexmk/
+latexmk -pvc -pdf -view=none -synctex=1 $1

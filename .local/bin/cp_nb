@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Check if at least two argument are passed
+if [ "$#" -lt 2 ]; then
+  echo "Usage: $0 file1.pdf [file2.pdf ...] destination"
+  exit 1
+fi
+
+# Store the destination as a variable
+destination="${@: -1}"
+
+# Check if the destination is a directory
+if [ ! -d "$destination" ]; then
+    echo "Error: Destination '$destination' is not a valid directory."
+    exit 1
+fi
+
+# Loop through all arguments except for the last one (which is the destination)
+for file in "${@:1:$#-1}"; do
+    # Check if the file exists and is a PDF
+    if [[ -f "$file" && "$file" == *.pdf ]]; then
+        # Extract the base name (without the extension)
+        base_name=$(basename "$file" .pdf)
+        # Copy the file with the new name in the destination directory
+        cp "$file" "$destination/${base_name}.notes.pdf"
+    else
+        echo "Warning: '$file' is not a valid PDF file or does not exist."
+    fi
+done
+
+# # Loop through all arguments except for the last one
+# for file in "$@"; do
+#   # Check if the file exists and is a PDF
+#   if [[ -f "$file" && "$file" == *.pdf ]]; then
+#     # Extract the base name (without the extension)
+#     base_name=$(basename "$file" .pdf)
+#     # Copy the file with the new name in the destination
+#     cp "$file" "${base_name}.notes.pdf"
+#   else
+#     echo "Warning: '$file' is not a valid PDF file or does not exist."
+#   fi
+# done

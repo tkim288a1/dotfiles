@@ -1,0 +1,22 @@
+#!/bin/bash
+# This program adjusts dimensions of selected pages of a pdf file to conform to the dimensions of the majority of the given file.
+#
+# Usage:
+#    pdf-unifsize [file name] [first page to change] [last page to change] [representative page]
+
+# Inputs
+fname=$1                        # file name
+pgFirst=$2                      # first page to mod
+pgLast=$3                       # last page to mod
+pgNorm=$4                       # representative page
+
+# Extracting dimensions of rep page
+# Note: Arrays in bash is defined by
+#       >  arr=(1 3 0)
+# Elements are accessed by
+#       >  ${arr[0]}
+dims=($(pdfinfo -box -f $pgNorm -l $pgNorm $fname\
+            | grep "^Page" | grep size | awk '{ print $4, $6 }'))
+
+#
+cpdf -scale-to-fit "${dims[0]}pt ${dims[1]}pt" $fname -o $fname

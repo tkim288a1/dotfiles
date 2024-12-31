@@ -1,0 +1,33 @@
+#!/bin/bash
+# This program automates the tasks of
+#   * combining multiple pdf files into a single one
+#   * generating and adding a bookmark (for easier navigation)
+#
+# Usage:
+#
+#   pdf-binder [input pdf] [output pdf]
+#
+
+# Error handling: insufficient number of inputs
+if [[ $# -lt 2 ]]
+then
+    echo "There must be at least two inputs. The last one must be the name of file to hold the list."
+fi
+
+# Define variables: input and output files
+inFiles=${@:1:$(( $#-1 ))}      # input files
+outFile=${@:$#}                 # output file
+
+# Bookmark
+cumsum=1
+for file in ${inFiles[@]}
+do
+    npages=$(pdfinfo $file | grep "Pages:" | awk '{ print $2 }')
+    # bookmark: [level:0] [title] [page]
+    printf "0 \"%s\" %d\n" $file $cumsum
+    (( cumsum+=$npages ))
+done > bm.txt
+
+# Combine pdfs and add bookmark
+pdfunite $inFiles $outFile
+cpdf -add-bookmarks bm.txt $outFile -o $outFile

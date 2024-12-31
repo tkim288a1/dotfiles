@@ -1,0 +1,4 @@
+#!/bin/bash
+# compile a pdf file using latexmk and clean up right away
+latexmk -f -pdf "$1"
+# latexmk -c

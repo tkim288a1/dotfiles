@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# # Function to print usage
+# usage() {
+#     echo "Usage: $0 [source]"
+#     exit 1
+# }
+
+# # Check if one argument is provided
+# if [ "$#" -lt 1 ]; then
+#     usage
+# fi
+
+# # Extract source folders (all but the last argument)
+# source=("${@:1}")
+
+# # Rsync options: -a (archive), -v (verbose), -u (update)
+# options="-av --update"
+
+# rsync $options "~/$source/docs" "~/Dropbox/$source"
+# rsync $options "~/$source/lecs" "~/Dropbox/$source"
+
+# echo "Sync complete."
+
+cp -r "~/1131/docs" "~/1131/lecs" "~/Dropbox/1131/"
