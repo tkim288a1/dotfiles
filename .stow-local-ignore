@@ -1,0 +1,42 @@
+# Note that stow's ignore files override the default ignore list.  So
+# we begin by putting down the original ignore list and then augment
+# it with a list of files to be ignored. Comments and blank lines are
+# allowed.
+#
+# To ensure that the files in this list are ignored, dry run:
+#
+# >> stow -v -n .
+#
+
+# -------------------
+# DEFAULT IGNORE LIST
+# -------------------
+
+RCS
+.+,v
+
+CVS
+\.\#.+       # CVS conflict files / emacs lock files
+\.cvsignore
+
+\.svn
+_darcs
+\.hg
+
+\.git
+\.gitignore
+\.gitmodules
+
+.+~          # emacs backup files
+\#.*\#       # emacs autosave files
+
+^/README.*
+^/LICENSE.*
+^/COPYING
+
+# ----------------
+# USER IGNORE LIST
+# ----------------
+
+macos-config
+install.sh
