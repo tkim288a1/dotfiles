@@ -1,5 +1,5 @@
 .local/share/
 .local/state/
 *_bak
-.config/iterm2/AppSupport/
+.config/iterm2/AppSupport
 .config/iterm2/sockets/
