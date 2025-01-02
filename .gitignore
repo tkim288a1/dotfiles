@@ -1,5 +1,15 @@
+# .local: Ignore everything except for .local/bin
 .local/share/
 .local/state/
+
 *_bak
 .config/iterm2/AppSupport
 .config/iterm2/sockets/
+
+# Emacs config: Ignore everything except for a couple files
+#  because when emacs launches and gets used, several files and
+#  directories are generated such as `elpa`, `recentf`, `history`,
+#  `custom.el`, etc.
+.config/taemax/*
+!.config/taemax/init.el
+!.config/taemax/sensible-defaults.el
