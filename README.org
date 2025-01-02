@@ -24,3 +24,24 @@ and then use GNU stow to create symlinks
 #+BEGIN_SRC sh
 stow .
 #+END_SRC
+
+* Remarks on Emacs Configuration
+My emacs configuration is found inside =~/.config/taemax= directory. I often times fiddle with different emacs profiles for experimentation purposes. To make switching among different configurations more convenient, I use [[https://github.com/plexus/chemacs2?tab=readme-ov-file#installation][Chemacs2]]. To recap the set-up:
+
+1. Ensure that =~/.emacs.d= is moved out or backed up somewhere, if it is already there.
+2. Install Chemacs2 by
+   #+begin_src sh
+   $ git clone https://github.com/plexus/chemacs2.git ~/.emacs.d
+   #+end_src
+3. Create =~/.emacs-profiles.el= file:
+   #+begin_example
+   (("default" . ((user-emacs-directory . "~/.config/taemax")))
+    ("prelude" . ((user-emacs-directory . "~/path/to/prelude-profile")))
+    ("test" . ((user-emacs-directory . "~/path/to/test-profile")))
+    ...
+    )   
+   #+end_example
+4. When emacs is invoked, the default profile is used. If a different profile is desired, use, e.g., 
+   #+begin_src sh
+   $ echo 'prelude' > ~/.emacs-profile  
+   #+end_src
