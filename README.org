@@ -1,4 +1,5 @@
 #+TITLE: My Dotfiles
+#+STARTUP: indent
 
 This directory contains dotfiles for my MacOS and Linux systems.
 
