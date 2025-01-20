@@ -6,6 +6,9 @@
 .config/iterm2/AppSupport
 .config/iterm2/sockets/
 
+.config/karabiner/*
+!.config/karabiner/karabiner.json
+
 # Emacs config: Ignore everything except for a couple files
 #  because when emacs launches and gets used, several files and
 #  directories are generated such as `elpa`, `recentf`, `history`,
@@ -13,3 +16,5 @@
 .config/taemax/*
 !.config/taemax/init.el
 !.config/taemax/sensible-defaults.el
+
+.config/prelude/
