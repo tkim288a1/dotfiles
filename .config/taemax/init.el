@@ -38,7 +38,7 @@
 
 ;; custom file
 (setq custom-file (locate-user-emacs-file "custom.el"))
-(load custom-file)
+(load custom-file t)
 
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
