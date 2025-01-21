@@ -12,6 +12,15 @@
 (setq use-package-verbose nil)
 (setq use-package-always-ensure t)
 
+;; macos execution path
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  ;; Load environment variables from shell
+  (exec-path-from-shell-initialize)
+  ;; Optionally, specify variables to import
+  (exec-path-from-shell-copy-envs '("PATH" "MANPATH")))
+
 ;; start the initial frame maximized
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
@@ -79,7 +88,15 @@
   :diminish
   :config
   (super-save-mode +1)
-  (add-to-list 'super-save-triggers 'ace-window))
+  ;; add integration with ace-window
+  (add-to-list 'super-save-triggers 'ace-window)
+  ;; save on find-file
+  (add-to-list 'super-save-hook-triggers 'find-file-hook)
+  ;; Enable deleting trailing white spaces before saving
+  (setq super-save-delete-trailing-whitespace t)
+  ;; ;; Enable deleting trailing white spaces before saving (except for the current line)
+  ;; (setq super-save-delete-trailing-whitespace 'except-current-line)
+  )
 
 ;; save minibuffer history
 ;; The built-in `savehist-mode' saves minibuffer histories.  Vertico
@@ -96,7 +113,14 @@
   :config
   (setq server-client-instructions nil)
   (unless (server-running-p)
-    (server-start)))
+    (server-start))
+
+  ;; TODO: Automatically create a client frame on Emacs startup
+  ;; (when (display-graphic-p)
+  ;;   (start-process "emacsclient" nil "emacsclient"
+  ;;                  "--alternate-editor='' --no-wait --create-frame"
+  ;;                  "--frame-parameters='(quote (name . \"dropdown_emacsdd\"))'"))
+  )
 
 ;; disable the annoying bell ring
 (setq ring-bell-function 'ignore)
@@ -212,6 +236,75 @@
 ;;   ;; :init (load-theme 'catppuccin)
 ;;   )
 
+;; disable other themes before loading new one
+(defadvice load-theme (before theme-dont-propagate activate)
+  "Disable theme before loading new one."
+  (mapc #'disable-theme custom-enabled-themes))
+
+(defvar tk-theme-selections
+  '(tk-nord
+    ;; catppuccin
+    doom-one
+    doom-nord
+    doom-material-dark
+    doom-tokyo-night
+    ef-duo-dark
+    ef-cyprus
+    )
+  "A list of selected themes.")
+
+;; ------------------------------
+;; system appearance change
+;; ------------------------------
+;; https://github.com/d12frosted/homebrew-emacs-plus?tab=readme-ov-file#system-appearance-change
+(defun tk-apply-theme-system-appearance (appearance)
+  "Load theme, taking current system APPEARANCE into consideration."
+  (mapc #'disable-theme custom-enabled-themes)
+  (pcase appearance
+    ('light (load-theme 'ef-cyprus t))
+    ('dark (load-theme 'ef-duo-dark t))))
+(add-hook 'ns-system-appearance-change-functions #'tk-apply-theme-system-appearance)
+
+
+;; Shamelessly taken and modified from counsel.el
+(defun tk-load-theme-action (x)
+  "Disable current themes and load theme X."
+  (condition-case nil
+      (progn
+        (mapc #'disable-theme custom-enabled-themes)
+        (load-theme (intern x) t)
+        (when (fboundp 'powerline-reset)
+          (powerline-reset)))
+    (error "Problem loading theme %s" x)))
+
+;; Below depends on "ivy". Re-written below so that it utilizes
+;; built-in functions.
+
+;; (defun tk-load-theme ()
+;;   "Forward to `load-theme'.
+;; Usable with `ivy-resume', `ivy-next-line-and-call' and
+;; `ivy-previous-line-and-call'."
+;;   (interactive)
+;;   (ivy-read "Load custom theme: "
+;;             (mapcar #'symbol-name
+;;                     tk-theme-selections)
+;;             :action #'tk-load-theme-action
+;;             :caller 'tk-load-theme))
+
+(defun tk-load-theme ()
+  "Forward to `load-theme'.
+Usable with `vertico' for theme selection."
+  (interactive)
+  (let ((theme (completing-read "Load custom theme: "
+                                (mapcar #'symbol-name
+                                        tk-theme-selections))))
+    (tk-load-theme-action theme)))
+
+(defun tk-reload-theme ()
+  (interactive)
+  (let ((current-theme (car custom-enabled-themes)))
+    (load-theme current-theme t)
+    (message "%s-theme reloaded." (symbol-name current-theme))))
 
 
 ;; ;;;###autoload
@@ -283,64 +376,6 @@
   (interactive)
   (let ((default-directory (expand-file-name "~/.config/")))
     (find-file (consult--read (directory-files default-directory nil "^[^.]" t)))))
-
-;; disable other themes before loading new one
-(defadvice load-theme (before theme-dont-propagate activate)
-  "Disable theme before loading new one."
-  (mapc #'disable-theme custom-enabled-themes))
-
-(defvar tk-theme-selections
-  '(tk-nord
-    ;; catppuccin
-    doom-one
-    doom-nord
-    doom-material-dark
-    doom-tokyo-night
-    ef-duo-dark
-    ef-cyprus
-    )
-  "A list of selected themes.")
-
-;; Shamelessly taken and modified from counsel.el
-(defun tk-load-theme-action (x)
-  "Disable current themes and load theme X."
-  (condition-case nil
-      (progn
-        (mapc #'disable-theme custom-enabled-themes)
-        (load-theme (intern x) t)
-        (when (fboundp 'powerline-reset)
-          (powerline-reset)))
-    (error "Problem loading theme %s" x)))
-
-;; Below depends on "ivy". Re-written below so that it utilizes
-;; built-in functions.
-
-;; (defun tk-load-theme ()
-;;   "Forward to `load-theme'.
-;; Usable with `ivy-resume', `ivy-next-line-and-call' and
-;; `ivy-previous-line-and-call'."
-;;   (interactive)
-;;   (ivy-read "Load custom theme: "
-;;             (mapcar #'symbol-name
-;;                     tk-theme-selections)
-;;             :action #'tk-load-theme-action
-;;             :caller 'tk-load-theme))
-
-(defun tk-load-theme ()
-  "Forward to `load-theme'.
-Usable with `vertico' for theme selection."
-  (interactive)
-  (let ((theme (completing-read "Load custom theme: "
-                                (mapcar #'symbol-name
-                                        tk-theme-selections))))
-    (tk-load-theme-action theme)))
-
-(defun tk-reload-theme ()
-  (interactive)
-  (let ((current-theme (car custom-enabled-themes)))
-    (load-theme current-theme t)
-    (message "%s-theme reloaded." (symbol-name current-theme))))
-
 
 ;; ------------------------------
 ;; Essential keybindings
@@ -500,9 +535,9 @@ Usable with `vertico' for theme selection."
    (dired-noselect default-directory)
    '((side . left))))
 
-(use-package vscode-icon
-  :ensure t
-  :commands (vscode-icon-for-file))
+;; (use-package vscode-icon
+;;   :ensure t
+;;   :commands (vscode-icon-for-file))
 
 (use-package dired-sidebar
   :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
@@ -517,7 +552,7 @@ Usable with `vertico' for theme selection."
   (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
   (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
   (setq dired-sidebar-subtree-line-prefix "__")
-  (setq dired-sidebar-theme 'vscode)
+  (setq dired-sidebar-theme 'nerd-icons)
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t))
 
@@ -540,6 +575,10 @@ Usable with `vertico' for theme selection."
 ;; ------------------------------
 ;; pdf tools
 ;; ------------------------------
+;; First time it installs, it looks for `autoconf'. If emacs is
+;; unaware of the system path, the installation/compilation of the
+;; program may fail. In such a case, check if the path from inside
+;; emacs. See also `exec-path-from-shell' package.
 (use-package pdf-tools
   :demand t
   :config
@@ -622,9 +661,6 @@ Usable with `vertico' for theme selection."
 ;; Revert buffers when the underlying file has changed.
 (global-auto-revert-mode 1)
 
-;; List recently opened files.
-(recentf-mode 1)
-
 ;; Enable show-paren-mode (to visualize paranthesis)
 ;; (show-paren-mode 1) --> it seems to be on already.
 
@@ -640,6 +676,8 @@ Usable with `vertico' for theme selection."
 ;; ------------------------------
 ;; recentf
 ;; ------------------------------
+;; List recently opened files.
+(recentf-mode 1)
 
 
 
@@ -722,3 +760,15 @@ Usable with `vertico' for theme selection."
 ;;  - org mode
 ;;  - latex mode
 ;;  - whitespace-mode: see prelude-editor.el
+
+(use-package lua-mode
+  :ensure t
+  :mode "\\.lua\\'"                  ; Use lua-mode for files ending in .lua
+  :interpreter "lua"                 ; Use lua-mode for Lua interpreter scripts
+  :custom
+  (lua-indent-level 4)               ; Set indentation level to 4 spaces
+  :config
+  (add-hook 'lua-mode-hook
+            (lambda ()
+              (setq tab-width 4)     ; Set tab width to 4 spaces
+              (setq indent-tabs-mode nil)))) ; Use spaces instead of tabs  
