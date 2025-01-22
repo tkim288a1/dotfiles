@@ -197,7 +197,7 @@
   :demand t
   :bind (;; A recursive grep
          ("M-s M-g" . consult-grep)
-         ;; Search for files names recursively
+         ;; Search for file names recursively
          ("M-s M-f" . consult-find)
          ;; Search through the outline (headings) of the file
          ("M-s M-o" . consult-outline)
@@ -477,57 +477,6 @@ Usable with `vertico' for theme selection."
       scroll-preserve-screen-position 1)
 
 
-;; ------------------------------
-;; org mode
-;; ------------------------------
-(use-package org
-  :ensure nil)				; what's the point?
-
-;; I am not sure if I like org-mode in variable-pitch-mode.
-;; (use-package variable-pitch-mode
-;;   :ensure nil
-;;   :hook
-;;   (org-mode . variable-pitch-mode))
-;; Remove the hook by (remove-hook 'org-mode-hook 'variable-pitch-mode)
-
-(use-package visual-line-mode
-  :ensure nil
-  :hook
-  (org-mode . visual-line-mode))
-
-;; for line wrapping
-;; (global-visual-line-mode 1) ; 1 for on, 0 for off.
-
-(use-package visual-fill-column
-  :ensure t
-  :hook (org-mode . visual-fill-column-mode)
-  :custom
-  (visual-fill-column-center-text t)
-  (visual-fill-column-width 110))
-
-;; The above is equivalent to below
-;; (defun tk/org-mode-visual-fill ()
-;;   (setq visual-fill-column-width 100
-;;         visual-fill-column-center-text t)
-;;   (visual-fill-column-mode 1))
-;; (use-package visual-fill-column
-;;   :hook (org-mode . tk/org-mode-visual-fill))
-
-;; org bullets
-(use-package org-bullets
-  :after org
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
-;; Replace list hyphen with dot
-(font-lock-add-keywords
- 'org-mode
- '(("^ *\\([-]\\) "
-    (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))
-    )))
-
-
 ;; dired sidebar
 (defun tk-dired-jump-sidebar ()
   (interactive)
@@ -746,21 +695,6 @@ Usable with `vertico' for theme selection."
 		       (if (= (point) (progn (back-to-indentation) (point)))
 			   (beginning-of-line))))
 
-
-;; ----------------------------------
-;; Features to add
-;;  - [x] helm alternative --> ivy
-;;  - [x] remove bells
-;;  - [x] snippets
-;;  - [x] pdf tools
-;;  - [x] save when moving away from buffer --> super-save
-;;  - [x] server-start
-;;  - [x] crux goodies (join lines, etc) --> more work needed
-;;  - [x] recentf
-;;  - org mode
-;;  - latex mode
-;;  - whitespace-mode: see prelude-editor.el
-
 (use-package lua-mode
   :ensure t
   :mode "\\.lua\\'"                  ; Use lua-mode for files ending in .lua
@@ -771,4 +705,339 @@ Usable with `vertico' for theme selection."
   (add-hook 'lua-mode-hook
             (lambda ()
               (setq tab-width 4)     ; Set tab width to 4 spaces
-              (setq indent-tabs-mode nil)))) ; Use spaces instead of tabs  
+              (setq indent-tabs-mode nil)))) ; Use spaces instead of tabs
+
+;; 2025/01/21 import from my old config
+
+;; ------------------------------
+;; org mode
+;; ------------------------------
+;; (use-package org
+;;   :ensure nil ; do not try to install it as it is built-in
+;;   :config
+;;   (setq org-M-RET-may-split-line '((default . nil)))
+;;   (setq org-insert-heading-respect-content t)
+;;   (setq org-log-done 'time)
+;;   (setq org-log-into-drawer t)
+
+;;   (setq org-directory "/tmp/testing-org/")
+;;   (setq org-agenda-files (list org-directory))
+
+;;   ;; Learn about the ! and more by reading the relevant section of the
+;;   ;; Org manual.  Evaluate: (info "(org) Tracking TODO state changes")
+;;   (setq org-todo-keywords
+;;         '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCEL(c!)" "DONE(d!)"))))
+
+(use-package org
+  :ensure nil
+  :custom
+  (org-list-allow-alphabetical t)
+  ;; Note: 2024-02-27: org-list-allow-alphabetical
+  ;; https://lucidmanager.org/productivity/emacs-for-distraction-free-writing/
+  :config
+  (setq org-ellipsis " ↴"
+        org-hide-emphasis-markers t)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" "|"
+                    "DONE(d)" "|"
+                    "CANCELED(c)"))))
+
+;; Installing and configure ORG-CONTRIB
+;; Note: 2024-05-18: org-contrib installed properly here.
+;; `latex-header-blocks' allows to include #+LATEX_HEADER: statements
+;; inside a single latex src block
+(use-package org-contrib
+  :ensure t
+  :config
+  (require 'ox-extra)
+  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
+
+;; I am not sure if I like org-mode in variable-pitch-mode.
+;; (use-package variable-pitch-mode
+;;   :ensure nil
+;;   :hook
+;;   (org-mode . variable-pitch-mode))
+;; Remove the hook by (remove-hook 'org-mode-hook 'variable-pitch-mode)
+
+(use-package visual-line-mode
+  :ensure nil
+  :hook
+  (org-mode . visual-line-mode))
+
+;; for line wrapping
+;; (global-visual-line-mode 1) ; 1 for on, 0 for off.
+
+(use-package visual-fill-column
+  :ensure t
+  :hook (org-mode . visual-fill-column-mode)
+  :custom
+  (visual-fill-column-center-text t)
+  (visual-fill-column-width 110))
+
+;; The above is equivalent to below
+;; (defun tk/org-mode-visual-fill ()
+;;   (setq visual-fill-column-width 100
+;;         visual-fill-column-center-text t)
+;;   (visual-fill-column-mode 1))
+;; (use-package visual-fill-column
+;;   :hook (org-mode . tk/org-mode-visual-fill))
+
+;; org bullets
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; Replace list hyphen with dot
+(font-lock-add-keywords
+ 'org-mode
+ '(("^ *\\([-]\\) "
+    (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•")))
+    )))
+
+
+;; ------------------------------
+;; latex in org
+;; ------------------------------
+;; cdlatex
+(use-package cdlatex)
+
+;; org-cdlatex
+(add-hook 'org-mode-hook #'turn-on-org-cdlatex)
+
+;; latex syntax highlight within org buffer
+(setq org-highlight-latex-and-related '(latex script entities))
+
+;; org beamer export
+(require 'ox-beamer)
+
+;; org latex export with `listings'
+(require 'ox-latex)
+(setq org-latex-listings 'listings)
+
+;; org-latex-pdf-process: prioritize using `latexrun' if installed
+;; Note(03/27/2024) `latexrun' creates a directory `latex.out' where all intermediate output files are stored. It appears that org needs access to log files. So change the output directory to the current directory by using `-O=%o' argument.
+(cond
+ ((executable-find "latexrun")
+  (setq org-latex-pdf-process
+        '("latexrun --latex-args=\"-interaction=nonstopmode\" -O=%o --latex-cmd=pdflatex %f")))
+ ((executable-find "latexmk")
+  (setq org-latex-pdf-process
+        '("latexmk -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"))))
+(add-to-list 'org-latex-packages-alist '("" "listings"))
+(add-to-list 'org-latex-packages-alist '("" "color"))
+
+;; if `minted' is used, need to use `-shell-escape' option
+;; (setq org-latex-listings 'minted
+;;       org-latex-pdf-process
+;;       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+;;         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+;; adding to org-latex-classes
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("letter" "\\documentclass{letter}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("amsart" "\\documentclass{amsart}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("extarticle" "\\documentclass{extarticle}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("hwsoln" "\\documentclass{article}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("standalone" "\\documentclass{standalone}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("kaobook" "\\documentclass{kaobook}"
+                 ("\\part{%s}" . "\\part*{%s}")
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("kaohandt" "\\documentclass{kaohandt}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("ximera" "\\documentclass{ximera}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("xourse" "\\documentclass{xourse}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+
+;; org-latex: $ to $
+;; This is to have such expressions as `$n$-th' to be exported
+;; properly. This does not handle `$n$th' well. if needed, use
+;; `\(n\)th' instead.
+(with-eval-after-load 'ox-latex
+  (defun org-latex-math-block (_math-block contents _info)
+    "Transcode a MATH-BLOCK object from Org to LaTeX.
+CONTENTS is a string.  INFO is a plist used as a communication
+channel."
+    (when (org-string-nw-p contents)
+      (format "$%s$" (org-trim contents)))))
+;; exporting $n$-th properly
+;; https://emacs.stackexchange.com/questions/53510/org-mode-how-to-latex-export-n-correctly
+
+(defun tk-org-change-minus-syntax-fun ()
+  (modify-syntax-entry ?- "."))
+(add-hook 'org-mode-hook #'tk-org-change-minus-syntax-fun)
+
+;; org latex, use my own labels
+(setq org-latex-prefer-user-labels t)
+
+;; org-latex-export: Remove auto-generated section labels
+;; https://stackoverflow.com/questions/18076328/org-mode-export-to-latex-suppress-generation-of-labels
+(defun tk-latex-filter-removeOrgAutoLabels (text backend info)
+  "Org-mode automatically generates labels for headings despite explicit use of `#+LABEL`. This filter forcibly removes all automatically generated org-labels in headings."
+  (when (org-export-derived-backend-p backend 'latex)
+    (replace-regexp-in-string "\\\\label{sec:org[a-f0-9]+}\n" "" text)))
+(add-to-list 'org-export-filter-headline-functions
+             'tk-latex-filter-removeOrgAutoLabels)
+
+;; ------------------------------
+;; org babel
+;; ------------------------------
+;; org-structure template
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+(add-to-list 'org-structure-template-alist '("m" . "src matlab"))
+
+;; Org Tempo also uses ‘org-structure-template-alist’.  A block can be inserted by pressing TAB after the string "<KEY".
+(require 'org-tempo)
+
+;; org-babel
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (matlab . t)
+   (fortran . t)
+   (python . t)
+   (shell . t)
+   ))
+
+(add-to-list 'org-src-lang-modes '("fortran" . f90))
+
+;; to use python3
+(setq org-babel-python-command "python3")
+
+;; babel editing window setup
+;; (setq org-src-window-setup 'current-window)
+;; (setq org-src-window-setup 'other-window)
+
+;; org block indentation
+(setq org-adapt-indentation nil
+      org-edit-src-content-indentation 0
+      org-src-preserve-indentation t
+      org-src-tab-acts-natively t)
+
+;; more org babel stuffs
+(setq org-confirm-babel-evaluate nil)
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
+(add-hook 'org-mode-hook 'org-display-inline-images)
+
+;; ------------------------------
+;; org gtd
+;; ------------------------------
+;; org capture (06/05/2024)
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
+         "* TODO %?\n")
+	("b" "Bookmark" entry (file+headline "~/Dropbox/org/bookmarks.org" "Bookmarks")
+         "* %? :bookmark:\nCaptured: %U\n")))
+(setq org-agenda-files '("~/Dropbox/org/tasks.org"))
+
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+
+;; MATLAB --------------------------------
+;; https://emacs.stackexchange.com/questions/56050/problem-with-use-package-and-matlab-mode-cannot-load
+(use-package matlab-mode)
+(autoload 'matlab-mode "matlab" "Matlab Editing Mode" t)
+(add-to-list 'auto-mode-alist '("\\.m$" . matlab-mode))
+
+(require 'matlab)
+(setq matlab-indent-function-body 'MathWorks-Standard)
+
+;; org babel for matlab: https://emacs.stackexchange.com/questions/57695/org-babels-matlab-session-output-is-malformed
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(require 'ob-octave-fix nil t)
+
+;; setup matlab for org babel
+(setq org-babel-default-header-args:matlab
+      '((:results . "output") (:session . "*MATLAB*")))
+
+(require 'matlab-shell)
+;; (setq matlab-shell-command "/Applications/MATLAB_R2023b.app/bin/matlab")
+;; (setq matlab-shell-command-switches '("-nodesktop" "-nosplash" "-nojvm"))
+(setq matlab-shell-command "/Applications/MATLAB_R2025a.app/bin/matlab")
+(setq matlab-shell-command-switches '("-nodesktop" "-nosplash"))
+
+(setq org-babel-octave-eoe-indicator " ")
+(setq org-babel-octave-eoe-output "ans = 0")
+
+(setq org-babel-octave-eoe-indicator "'org_babel_eoe'")
+(setq org-babel-octave-eoe-output "ans = org_babel_eoe")
+
+;; ----------------------------------
+;; which-key
+;; ----------------------------------
+(use-package which-key
+  :ensure t
+  :defer nil ; Load immediately
+  :config
+  (which-key-mode)		 ; Enable which-key globally
+  (setq which-key-idle-delay 0.5 ; Time to wait before showing suggestions
+        which-key-idle-secondary-delay 0.1 ; Delay after the first keypress
+        which-key-max-description-length 40 ; Truncate descriptions to keep it tidy
+        which-key-popup-type 'side-window) ; Show suggestions in a side window
+  (which-key-setup-side-window-right-bottom)) ; Position it at the right/bottom
+
+
+;; ----------------------------------
+;; Features to add
+;;  - [x] helm alternative --> vertico, marginalia, consult, orderless
+;;  - [x] remove bells
+;;  - [x] snippets
+;;  - [x] pdf tools
+;;  - [x] save when moving away from buffer --> super-save
+;;  - [x] server-start
+;;  - [x] crux goodies (join lines, etc) --> more work needed
+;;  - [x] recentf
+;;  - [x] org mode
+;;  - latex mode
+;;  - whitespace-mode: see prelude-editor.el
