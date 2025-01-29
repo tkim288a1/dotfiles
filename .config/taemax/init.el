@@ -977,7 +977,9 @@ channel."
       '(("t" "Todo" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
          "* TODO %?\n")
 	("b" "Bookmark" entry (file+headline "~/Dropbox/org/bookmarks.org" "Bookmarks")
-         "* %? :bookmark:\nCaptured: %U\n")))
+         "* %? :bookmark:\nCaptured: %U\n")
+	("h" "Habits" entry (file+headline "~/Dropbox/org/tasks.org" "Habits")
+         "* %? :daily:\n")))
 (setq org-agenda-files '("~/Dropbox/org/tasks.org"))
 
 (global-set-key (kbd "C-c c") 'org-capture)
