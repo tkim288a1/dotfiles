@@ -15,6 +15,6 @@
 #  `custom.el`, etc.
 .config/taemax/*
 !.config/taemax/init.el
-!.config/taemax/sensible-defaults.el
+!.config/taemax/tk-sensible-defaults.el
 
 .config/prelude/
