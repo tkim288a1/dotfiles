@@ -15,7 +15,7 @@
 ;; macos execution path
 (use-package exec-path-from-shell
   :ensure t
-  :config
+  :init
   ;; Load environment variables from shell
   (exec-path-from-shell-initialize)
   ;; Optionally, specify variables to import
@@ -739,7 +739,7 @@ Usable with `vertico' for theme selection."
         org-hide-emphasis-markers t)
   (setq org-todo-keywords
         '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" "|"
-                    "DONE(d)" "|"
+                    "DONE(d)" "SKIPPED(s)" "|"
                     "CANCELED(c)"))))
 
 ;; Installing and configure ORG-CONTRIB
@@ -976,7 +976,10 @@ channel."
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Dropbox/org/tasks.org" "Tasks")
          "* TODO %?\n")
-	("b" "Bookmark" entry (file+headline "~/Dropbox/org/bookmarks.org" "Bookmarks")
+	;; Bookmark vs Inbox: they seem to be redundant.
+	;; ("b" "Bookmark" entry (file+headline "~/Dropbox/org/inbox.org" "Bookmarks")
+        ;;  "* %? :bookmark:\nCaptured: %U\n")
+	("b" "Bookmark" entry (file "~/Dropbox/org/inbox.org")
          "* %? :bookmark:\nCaptured: %U\n")
 	("h" "Habits" entry (file+headline "~/Dropbox/org/tasks.org" "Habits")
          "* %? :daily:\n")))
@@ -985,6 +988,11 @@ channel."
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c a") 'org-agenda)
 
+;; When you change the state of a task in Org Agenda, the
+;; corresponding Org file (e.g., tasks.org) is updated in the buffer,
+;; but it is not automatically saved to disk. You have to save it
+;; manually unless you configure Emacs to do it for you.
+(add-hook 'org-after-todo-state-change-hook #'org-save-all-org-buffers)
 
 ;; MATLAB --------------------------------
 ;; https://emacs.stackexchange.com/questions/56050/problem-with-use-package-and-matlab-mode-cannot-load
