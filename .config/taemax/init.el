@@ -620,6 +620,10 @@ Usable with `vertico' for theme selection."
 ;; ------------------------------
 
 
+(use-package tex
+  :ensure auctex)
+
+
 
 
 ;; ------------------------------
@@ -748,6 +752,7 @@ Usable with `vertico' for theme selection."
 ;; inside a single latex src block
 (use-package org-contrib
   :ensure t
+  :demand t
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))

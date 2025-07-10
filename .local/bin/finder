@@ -28,13 +28,16 @@ $HOME/gnb \
 $HOME/Dropbox/dox \
 $HOME/Dropbox/teaching \
 $HOME/Dropbox/tmp \
+$HOME/Dropbox/learning \
+$HOME/Dropbox/notes \
 $HOME/1131 \
 $HOME/1151 \
 $HOME/1152 \
 $HOME/3607 \
 $HOME/3607master \
 $HOME/5602 \
-$HOME/5601"
+$HOME/5601 \
+$HOME/4552"
 dmenu_cmd="dmenu -i -l $LINES $DMENU_OPTIONS "
 
 # 2024-02-20 modification for mac
